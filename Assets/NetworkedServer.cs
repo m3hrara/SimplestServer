@@ -16,6 +16,8 @@ public class NetworkedServer : MonoBehaviour
     LinkedList<PlayerAccount> playerAccounts;
     const int playerAccountRecord = 1;
     string playerAccountsFilePath;
+    int playerWaitingForMatchWithID = -1;
+    LinkedList<GameRoom> gameRooms;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +30,8 @@ public class NetworkedServer : MonoBehaviour
         playerAccountsFilePath = Application.dataPath + Path.DirectorySeparatorChar + "PlayerAccounts.txt";
         playerAccounts = new LinkedList<PlayerAccount>();
         LoadPlayerAccounts();
+
+        gameRooms = new LinkedList<GameRoom>();
     }
 
     // Update is called once per frame
@@ -133,6 +137,93 @@ public class NetworkedServer : MonoBehaviour
                 }
             }
         }
+        else if (Signifier == ClientToServerSignifier.JoinQueueForGame)
+        {
+            if (playerWaitingForMatchWithID == -1)
+            {
+                playerWaitingForMatchWithID = id;
+            }
+            else
+            {
+                GameRoom gr = new GameRoom(playerWaitingForMatchWithID, id);
+                gameRooms.AddLast(gr);
+
+                SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID1);
+                SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID2);
+
+                playerWaitingForMatchWithID = -1;
+            }
+        }
+        else if (Signifier == ClientToServerSignifier.TicTacToeSomethingPlay)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID2);
+                }
+                else
+                {
+                    SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID1);
+                }
+            }
+        }
+        else if (Signifier == ClientToServerSignifier.QuickChatOne)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneRecieved + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.playerID1);
+                }
+                else
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneRecieved + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.playerID2);
+                }
+            }
+        }
+        else if (Signifier == ClientToServerSignifier.QuickChatTwo)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatTwoRecieved + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatTwoSent + "", gr.playerID1);
+                }
+                else
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatTwoRecieved + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatTwoSent + "", gr.playerID2);
+                }
+            }
+        }
+        else if (Signifier == ClientToServerSignifier.QuickChatThree)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatThreeRecieved + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatThreeSent + "", gr.playerID1);
+                }
+                else
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatThreeRecieved + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifier.QuickChatThreeSent + "", gr.playerID2);
+                }
+            }
+        }
     }
     public void SavePlayerAccount()
     {
@@ -162,12 +253,26 @@ public class NetworkedServer : MonoBehaviour
             sr.Close();
         }
     }
+    private GameRoom GetGameRoomWithClientID(int id)
+    {
+        foreach (GameRoom gr in gameRooms)
+        {
+            if (gr.playerID1 == id || gr.playerID2 == id)
+                return gr;
+        }
+        return null;
+    }
 }
 public static class ClientToServerSignifier
 {
     public const int CreateAccount = 1;
     public const int Login = 2;
     public const int JoinQueueForGame = 3;
+    public const int TicTacToeSomethingPlay = 4;
+    public const int QuickChatOne = 5;
+    public const int QuickChatTwo = 6;
+    public const int QuickChatThree = 7;
+    public const int QuickChatFour = 8;
 }
 public static class ServerToClientSignifier
 {
@@ -176,6 +281,13 @@ public static class ServerToClientSignifier
     public const int AccountCreationComplete = 3;
     public const int AccountCreationFailed = 4;
     public const int GameStart = 5;
+    public const int OpponentPlay = 6;
+    public const int QuickChatOneRecieved = 7;
+    public const int QuickChatTwoRecieved = 8;
+    public const int QuickChatThreeRecieved = 9;
+    public const int QuickChatOneSent = 10;
+    public const int QuickChatTwoSent = 11;
+    public const int QuickChatThreeSent = 12;
 }
 public class PlayerAccount
 {
@@ -184,5 +296,16 @@ public class PlayerAccount
     {
         this.name = name;
         this.password = password;
+    }
+}
+
+public class GameRoom
+{
+    public int playerID1, playerID2;
+
+    public GameRoom(int PlayerID1, int PlayerID2)
+    {
+        playerID1 = PlayerID1;
+        playerID2 = PlayerID2;
     }
 }
