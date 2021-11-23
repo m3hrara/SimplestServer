@@ -72,7 +72,7 @@ public class NetworkedServer : MonoBehaviour
         byte[] buffer = Encoding.Unicode.GetBytes(msg);
         NetworkTransport.Send(hostID, id, reliableChannelID, buffer, msg.Length * sizeof(char), out error);
     }
-    
+
     private void ProcessRecievedMsg(string msg, int id)
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
@@ -112,10 +112,10 @@ public class NetworkedServer : MonoBehaviour
             string p = csv[2];
             foreach (PlayerAccount pa in playerAccounts)
             {
-                if(pa.name == n)
+                if (pa.name == n)
                 {
                     nameFound = true;
-                    if(pa.password == p)
+                    if (pa.password == p)
                     {
                         SendMessageToClient(ServerToClientSignifier.LoginComplete + "", id);
                         Debug.Log("login complete");
@@ -129,9 +129,9 @@ public class NetworkedServer : MonoBehaviour
                     }
                 }
             }
-            if(!nameFound)
+            if (!nameFound)
             {
-                if(!msgBeenSentToClient)
+                if (!msgBeenSentToClient)
                 {
                     SendMessageToClient(ServerToClientSignifier.LoginFailed + "", id);
                 }
@@ -224,6 +224,13 @@ public class NetworkedServer : MonoBehaviour
                 }
             }
         }
+        else if (Signifier == ClientToServerSignifier.SendMessage)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+            SendMessageToClient(ServerToClientSignifier.TextMessage + "," + csv[1] + ":" + csv[2], gr.playerID1);
+            SendMessageToClient(ServerToClientSignifier.TextMessage + "," + csv[1] + ":" + csv[2], gr.playerID2);
+
+        }
     }
     public void SavePlayerAccount()
     {
@@ -272,7 +279,8 @@ public static class ClientToServerSignifier
     public const int QuickChatOne = 5;
     public const int QuickChatTwo = 6;
     public const int QuickChatThree = 7;
-    public const int QuickChatFour = 8;
+    public const int SendMessage = 8;
+
 }
 public static class ServerToClientSignifier
 {
@@ -288,6 +296,8 @@ public static class ServerToClientSignifier
     public const int QuickChatOneSent = 10;
     public const int QuickChatTwoSent = 11;
     public const int QuickChatThreeSent = 12;
+    public const int TextMessage = 13;
+
 }
 public class PlayerAccount
 {
