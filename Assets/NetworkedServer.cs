@@ -17,7 +17,7 @@ public class NetworkedServer : MonoBehaviour
     const int playerAccountRecord = 1;
     string playerAccountsFilePath;
     int playerWaitingForMatchWithID = -1;
-    LinkedList<GameRoom> gameRooms;
+    List<GameRoom> gameRooms;
     int turn = 1;
     // Start is called before the first frame update
     void Start()
@@ -140,37 +140,44 @@ public class NetworkedServer : MonoBehaviour
         }
         else if (Signifier == ClientToServerSignifier.JoinQueueForGame)
         {
-            if (playerWaitingForMatchWithID == -1)
+            if (gameRooms.Count == 0)
             {
-                playerWaitingForMatchWithID = id;
-            }
-            else
-            {
-                GameRoom gr = new GameRoom(playerWaitingForMatchWithID, id);
-                gameRooms.AddLast(gr);
-
-                SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID2);
-
-                playerWaitingForMatchWithID = -1;
-            }
-        }
-        else if (Signifier == ClientToServerSignifier.TicTacToeSomethingPlay)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-
-            if (gr != null)
-            {
-                if (gr.playerID1 == id)
+                if (playerWaitingForMatchWithID == -1)
                 {
-                    SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID2);
+                    playerWaitingForMatchWithID = id;
                 }
                 else
                 {
-                    SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID1);
+                    GameRoom gr = new GameRoom(playerWaitingForMatchWithID, id);
+                    gameRooms.Add(gr);
+
+                    SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifier.GameStart + "", gr.playerID2);
+
+                    playerWaitingForMatchWithID = -1;
                 }
             }
+            else
+            {
+                gameRooms[Random.Range(0, gameRooms.Count)].ObserverID.Add(id);
+            }
         }
+        //else if (Signifier == ClientToServerSignifier.TicTacToeSomethingPlay)
+        //{
+        //    GameRoom gr = GetGameRoomWithClientID(id);
+
+        //    if (gr != null)
+        //    {
+        //        if (gr.playerID1 == id)
+        //        {
+        //            SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID2);
+        //        }
+        //        else
+        //        {
+        //            SendMessageToClient(ServerToClientSignifier.OpponentPlay + "", gr.playerID1);
+        //        }
+        //    }
+        //}
         else if (Signifier == ClientToServerSignifier.QuickChatOne)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
@@ -181,11 +188,20 @@ public class NetworkedServer : MonoBehaviour
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatOneRecieved + "", gr.playerID2);
                     SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.playerID1);
+                    for(int i=0; i< gr.ObserverID.Count;i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
+
                 }
-                else
+                else if(gr.playerID2 == id)
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatOneRecieved + "", gr.playerID1);
                     SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.playerID2);
+                    for (int i = 0; i < gr.ObserverID.Count; i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
                 }
             }
         }
@@ -199,11 +215,19 @@ public class NetworkedServer : MonoBehaviour
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatTwoRecieved + "", gr.playerID2);
                     SendMessageToClient(ServerToClientSignifier.QuickChatTwoSent + "", gr.playerID1);
+                    for (int i = 0; i < gr.ObserverID.Count; i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
                 }
-                else
+                else if (gr.playerID2 == id)
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatTwoRecieved + "", gr.playerID1);
                     SendMessageToClient(ServerToClientSignifier.QuickChatTwoSent + "", gr.playerID2);
+                    for (int i = 0; i < gr.ObserverID.Count; i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
                 }
             }
         }
@@ -217,11 +241,19 @@ public class NetworkedServer : MonoBehaviour
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatThreeRecieved + "", gr.playerID2);
                     SendMessageToClient(ServerToClientSignifier.QuickChatThreeSent + "", gr.playerID1);
+                    for (int i = 0; i < gr.ObserverID.Count; i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
                 }
-                else
+                else if (gr.playerID2 == id)
                 {
                     SendMessageToClient(ServerToClientSignifier.QuickChatThreeRecieved + "", gr.playerID1);
                     SendMessageToClient(ServerToClientSignifier.QuickChatThreeSent + "", gr.playerID2);
+                    for (int i = 0; i < gr.ObserverID.Count; i++)
+                    {
+                        SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                    }
                 }
             }
         }
@@ -230,6 +262,10 @@ public class NetworkedServer : MonoBehaviour
             GameRoom gr = GetGameRoomWithClientID(id);
             SendMessageToClient(ServerToClientSignifier.TextMessage + "," + csv[1] + ":" + csv[2], gr.playerID1);
             SendMessageToClient(ServerToClientSignifier.TextMessage + "," + csv[1] + ":" + csv[2], gr.playerID2);
+            for (int i = 0; i < gr.ObserverID.Count; i++)
+            {
+                SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+            }
 
         }
         else if (Signifier == ClientToServerSignifier.SendButtonOne)
@@ -240,12 +276,20 @@ public class NetworkedServer : MonoBehaviour
                     turn = 2;
                 SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
                     turn = 1;
                 SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -258,6 +302,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -265,6 +313,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -277,6 +329,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -284,6 +340,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -296,6 +356,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -303,6 +367,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -315,6 +383,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -322,6 +394,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -334,6 +410,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -341,6 +421,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -353,6 +437,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -360,6 +448,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -372,6 +464,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -379,6 +475,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -391,6 +491,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
             else if (turn == 2 && gr.playerID2 == id)
             {
@@ -398,6 +502,10 @@ public class NetworkedServer : MonoBehaviour
 
                 SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID2);
+                for (int i = 0; i < gr.ObserverID.Count; i++)
+                {
+                    SendMessageToClient(ServerToClientSignifier.QuickChatOneSent + "", gr.ObserverID[i]);
+                }
             }
 
         }
@@ -508,10 +616,11 @@ public class PlayerAccount
 public class GameRoom
 {
     public int playerID1, playerID2;
-
+    public List<int> ObserverID;
     public GameRoom(int PlayerID1, int PlayerID2)
     {
         playerID1 = PlayerID1;
         playerID2 = PlayerID2;
+        ObserverID = new List<int>();
     }
 }
