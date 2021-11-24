@@ -18,6 +18,7 @@ public class NetworkedServer : MonoBehaviour
     string playerAccountsFilePath;
     int playerWaitingForMatchWithID = -1;
     LinkedList<GameRoom> gameRooms;
+    int turn = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -234,13 +235,15 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonOne)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                    turn = 2;
                 SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                    turn = 1;
                 SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID2);
             }
@@ -249,13 +252,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonTwo)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID2);
             }
@@ -264,13 +271,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonThree)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID2);
             }
@@ -279,13 +290,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonFour)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID2);
             }
@@ -294,13 +309,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonFive)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID2);
             }
@@ -309,13 +328,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonSix)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID2);
             }
@@ -324,13 +347,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonSeven)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID2);
             }
@@ -339,13 +366,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonEight)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID2);
             }
@@ -354,13 +385,17 @@ public class NetworkedServer : MonoBehaviour
         else if (Signifier == ClientToServerSignifier.SendButtonNine)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if (gr.playerID1 == id)
+            if (turn == 1 && gr.playerID1 == id)
             {
+                turn = 2;
+
                 SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID2);
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
+                turn = 1;
+
                 SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID1);
                 SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID2);
             }
