@@ -38,7 +38,6 @@ public class NetworkedServer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         int recHostID;
         int recConnectionID;
         int recChannelID;
@@ -253,245 +252,43 @@ public class NetworkedServer : MonoBehaviour
 
 
         }
-        else if (Signifier == ClientToServerSignifier.SendButtonOne)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                    turn = 2;
-                SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
 
-                    SendMessageToClient(ServerToClientSignifier.SlotOneX + "", gr.ObserverID[0]);
+        //else if (Signifier == ClientToServerSignifier.SendButtonClick)
+        //{
+        //    GameRoom gr = GetGameRoomWithClientID(id);
 
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                    turn = 1;
-                SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
+        //    int temp = int.Parse(csv[1]);
 
-                    SendMessageToClient(ServerToClientSignifier.SlotOneO + "", gr.ObserverID[0]);
+        //    if (turn == 1 && gr.playerID1 == id)
+        //    {
+        //        turn = 2;
+        //        PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
+        //        pressedButtons.AddLast(newPlayerMoves);
 
-            }
+        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID1);
+        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID2);
 
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonTwo)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
+        //        if (gr.ObserverID.Count > 0)
 
-                SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
+        //            SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.ObserverID[0]);
 
-                    SendMessageToClient(ServerToClientSignifier.SlotTwoX + "", gr.ObserverID[0]);
+        //    }
+        //    else if (turn == 2 && gr.playerID2 == id)
+        //    {
+        //        turn = 1;
+        //        PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
+        //        pressedButtons.AddLast(newPlayerMoves);
 
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
+        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID1);
+        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID2);
+        //        if (gr.ObserverID.Count > 0)
 
-                SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
+        //            SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.ObserverID[0]);
 
-                    SendMessageToClient(ServerToClientSignifier.SlotTwoO + "", gr.ObserverID[0]);
+        //    }
 
-            }
+        //}
 
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonThree)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotThreeX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotThreeO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonFour)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotFourX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotFourO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonFive)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.playerID2);
-                if(gr.ObserverID.Count>0)
-                SendMessageToClient(ServerToClientSignifier.SlotFiveX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotFiveO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonSix)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotSixX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotSixO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonSeven)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotSevenX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotSevenO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonEight)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotEightX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotEightO + "", gr.ObserverID[0]);
-
-            }
-
-        }
-        else if (Signifier == ClientToServerSignifier.SendButtonNine)
-        {
-            GameRoom gr = GetGameRoomWithClientID(id);
-            if (turn == 1 && gr.playerID1 == id)
-            {
-                turn = 2;
-
-                SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotNineX + "", gr.ObserverID[0]);
-
-            }
-            else if (turn == 2 && gr.playerID2 == id)
-            {
-                turn = 1;
-
-                SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID1);
-                SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.playerID2);
-                if (gr.ObserverID.Count > 0)
-
-                    SendMessageToClient(ServerToClientSignifier.SlotNineO + "", gr.ObserverID[0]);
-
-            }
-        }
         else if (Signifier == ClientToServerSignifier.SendReplayButton)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
@@ -553,18 +350,8 @@ public static class ClientToServerSignifier
     public const int QuickChatTwo = 6;
     public const int QuickChatThree = 7;
     public const int SendMessage = 8;
-    public const int SendButtonIndex = 9;
-    public const int SendButtonOne = 10;
-    public const int SendButtonTwo = 11;
-    public const int SendButtonThree = 12;
-    public const int SendButtonFour = 13;
-    public const int SendButtonFive = 14;
-    public const int SendButtonSix = 15;
-    public const int SendButtonSeven = 16;
-    public const int SendButtonEight = 17;
-    public const int SendButtonNine = 18;
-    public const int SendReplayButton = 19;
-
+    public const int SendButtonClick = 9;
+    public const int SendReplayButton = 10;
 }
 public static class ServerToClientSignifier
 {
@@ -581,27 +368,10 @@ public static class ServerToClientSignifier
     public const int QuickChatTwoSent = 11;
     public const int QuickChatThreeSent = 12;
     public const int TextMessage = 13;
-    public const int SlotOneX = 14;
-    public const int SlotOneO = 15;
-    public const int SlotTwoX = 16;
-    public const int SlotTwoO = 17;
-    public const int SlotThreeX = 18;
-    public const int SlotThreeO = 19;
-    public const int SlotFourX = 20;
-    public const int SlotFourO = 21;
-    public const int SlotFiveX = 22;
-    public const int SlotFiveO = 23;
-    public const int SlotSixX = 24;
-    public const int SlotSixO = 25;
-    public const int SlotSevenX = 26;
-    public const int SlotSevenO = 27;
-    public const int SlotEightX = 28;
-    public const int SlotEightO = 29;
-    public const int SlotNineX = 30;
-    public const int SlotNineO = 31;
-    public const int StartObserving = 32;
-    public const int ReplayOne = 33;
-    public const int ReplayTwo = 34;
+    public const int SlotClickReceived = 14;
+    public const int StartObserving = 15;
+    public const int ReplayOne = 16;
+    public const int ReplayTwo = 17;
 }
 public class PlayerAccount
 {
