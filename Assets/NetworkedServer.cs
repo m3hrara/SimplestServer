@@ -15,9 +15,12 @@ public class NetworkedServer : MonoBehaviour
     int socketPort = 5478;
     LinkedList<PlayerAccount> playerAccounts;
     const int playerAccountRecord = 1;
+    const int playerMoveRecord = 1;
     string playerAccountsFilePath;
+    string playerMovesFilePath;
     int playerWaitingForMatchWithID = -1;
     List<GameRoom> gameRooms;
+    LinkedList<PlayerMoves> pressedButtons;
     int turn = 1;
     // Start is called before the first frame update
     void Start()
@@ -32,7 +35,13 @@ public class NetworkedServer : MonoBehaviour
         playerAccounts = new LinkedList<PlayerAccount>();
         LoadPlayerAccounts();
 
+        playerMovesFilePath = Application.dataPath + Path.DirectorySeparatorChar + "PlayerMoves.txt";
+        pressedButtons = new LinkedList<PlayerMoves>();
         gameRooms = new List<GameRoom>();
+        File.Delete(Application.dataPath + Path.DirectorySeparatorChar + "PlayerMoves.txt");
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 
     // Update is called once per frame
@@ -252,56 +261,86 @@ public class NetworkedServer : MonoBehaviour
 
 
         }
-
-        //else if (Signifier == ClientToServerSignifier.SendButtonClick)
-        //{
-        //    GameRoom gr = GetGameRoomWithClientID(id);
-
-        //    int temp = int.Parse(csv[1]);
-
-        //    if (turn == 1 && gr.playerID1 == id)
-        //    {
-        //        turn = 2;
-        //        PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
-        //        pressedButtons.AddLast(newPlayerMoves);
-
-        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID1);
-        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID2);
-
-        //        if (gr.ObserverID.Count > 0)
-
-        //            SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.ObserverID[0]);
-
-        //    }
-        //    else if (turn == 2 && gr.playerID2 == id)
-        //    {
-        //        turn = 1;
-        //        PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
-        //        pressedButtons.AddLast(newPlayerMoves);
-
-        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID1);
-        //        SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID2);
-        //        if (gr.ObserverID.Count > 0)
-
-        //            SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.ObserverID[0]);
-
-        //    }
-
-        //}
-
-        else if (Signifier == ClientToServerSignifier.SendReplayButton)
+        else if (Signifier == ClientToServerSignifier.SendButtonClick)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
-            if(gr.playerID1 == id)
+
+            int temp = int.Parse(csv[1]);
+
+            if (turn == 1 && gr.playerID1 == id)
             {
-                SendMessageToClient(ServerToClientSignifier.ReplayOne + "", gr.playerID1);
+                turn = 2;
+                PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
+                pressedButtons.AddLast(newPlayerMoves);
+                SavePlayerMoves();
+
+                SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID1);
+                SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.playerID2);
+
+                if (gr.ObserverID.Count > 0)
+
+                    SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 1 + "," + temp + ",", gr.ObserverID[0]);
+
             }
-            else if (gr.playerID2 == id)
+            else if (turn == 2 && gr.playerID2 == id)
             {
-                SendMessageToClient(ServerToClientSignifier.ReplayTwo + "", gr.playerID2);
+                turn = 1;
+                PlayerMoves newPlayerMoves = new PlayerMoves(id.ToString(), temp.ToString());
+                pressedButtons.AddLast(newPlayerMoves);
+                SavePlayerMoves();
+
+                SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID1);
+                SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.playerID2);
+                if (gr.ObserverID.Count > 0)
+
+                    SendMessageToClient(ServerToClientSignifier.SlotClickReceived + "," + 2 + "," + temp + ",", gr.ObserverID[0]);
+
+            }
+        }
+        else if (Signifier == ClientToServerSignifier.SendReplayButton)
+        {
+            LoadPlayerMoves();
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            foreach (PlayerMoves pa in pressedButtons)
+            {
+                SendMessageToClient(ServerToClientSignifier.ReplayTwo + "," + pa.playerID + "," + pa.slot + "," , gr.playerID1);
+                SendMessageToClient(ServerToClientSignifier.ReplayTwo + "," + pa.playerID + "," + pa.slot + "," , gr.playerID2);
             }
         }
     }
+
+    public void SavePlayerMoves()
+    {
+        StreamWriter sw = new StreamWriter(playerMovesFilePath);
+        foreach (PlayerMoves pa in pressedButtons)
+        {
+            sw.WriteLine(playerMoveRecord + "," + pa.playerID + "," + pa.slot);
+        }
+        sw.Close();
+    }
+
+    public void LoadPlayerMoves()
+    {
+        if (File.Exists(playerAccountsFilePath))
+        {
+            StreamReader sr = new StreamReader(playerMovesFilePath);
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] csv = line.Split(',');
+                int Signifier = int.Parse(csv[0]);
+                if (Signifier == playerMoveRecord)
+                {
+                    PlayerMoves pa = new PlayerMoves(csv[1], csv[2]);
+                    pressedButtons.AddLast(pa);
+                    //slotsPlayed.Add(int.Parse(csv[2]));
+                }
+            }
+            sr.Close();
+        }
+    }
+
     public void SavePlayerAccount()
     {
         StreamWriter sw = new StreamWriter(playerAccountsFilePath);
@@ -382,7 +421,15 @@ public class PlayerAccount
         this.password = password;
     }
 }
-
+public class PlayerMoves
+{
+    public string playerID, slot;
+    public PlayerMoves(string playerID, string slot)
+    {
+        this.playerID = playerID;
+        this.slot = slot;
+    }
+}
 public class GameRoom
 {
     public int playerID1, playerID2;
